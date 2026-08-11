@@ -1,0 +1,1139 @@
+# 1. Estrutura básica do projeto
+
+```text
+meu-projeto/
+│
+├── app.js
+├── package.json
+├── package-lock.json
+├── .env
+├── .gitignore
+│
+├── src/
+│   │
+│   ├── config/
+│   │   └── database.js
+│   │
+│   ├── controllers/
+│   │   └── usuarioController.js
+│   │
+│   ├── models/
+│   │   └── usuarioModel.js
+│   │
+│   ├── routes/
+│   │   └── usuarioRoutes.js
+│   │
+│   ├── services/
+│   │   └── usuarioService.js
+│   │
+│   ├── middlewares/
+│   │   └── authMiddleware.js
+│   │
+│   ├── views/
+│   │   ├── layouts/
+│   │   │   └── main.ejs
+│   │   │
+│   │   ├── partials/
+│   │   │   ├── header.ejs
+│   │   │   └── footer.ejs
+│   │   │
+│   │   └── usuarios/
+│   │       ├── index.ejs
+│   │       ├── criar.ejs
+│   │       ├── editar.ejs
+│   │       └── detalhes.ejs
+│   │
+│   └── public/
+│       ├── css/
+│       │   └── style.css
+│       │
+│       ├── js/
+│       │   └── script.js
+│       │
+│       └── img/
+│
+├── database/
+│   ├── migrations/
+│   └── seeds/
+│
+└── tests/
+    ├── controllers/
+    ├── models/
+    └── routes/
+```
+
+Essa é uma **estrutura inicial**, não uma regra absoluta. Em projetos pequenos, por exemplo, `services`, `middlewares`, `tests` e `database/migrations` podem ser introduzidos gradualmente.
+
+---
+
+# 2. O papel de cada pasta
+
+### `app.js`
+
+É o ponto de entrada da aplicação.
+
+Responsável inicialmente por:
+
+* criar o Express;
+* configurar EJS;
+* configurar arquivos estáticos;
+* receber formulários;
+* registrar rotas;
+* iniciar o servidor.
+
+Exemplo:
+
+```javascript
+const express = require('express');
+const path = require('path');
+
+const usuarioRoutes = require('./src/routes/usuarioRoutes');
+
+const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'src/views'));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'src/public')));
+
+app.use('/usuarios', usuarioRoutes);
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
+```
+
+---
+
+# 3. MVC
+
+O coração da arquitetura será:
+
+```text
+                CLIENTE
+                   │
+                   ▼
+                ROUTES
+                   │
+                   ▼
+              CONTROLLER
+                   │
+                   ▼
+                SERVICE
+                   │
+                   ▼
+                 MODEL
+                   │
+                   ▼
+               DATABASE
+```
+
+E o caminho de volta:
+
+```text
+DATABASE
+   │
+   ▼
+ MODEL
+   │
+   ▼
+SERVICE
+   │
+   ▼
+CONTROLLER
+   │
+   ▼
+ EJS
+   │
+   ▼
+ HTML
+   │
+   ▼
+CLIENTE
+```
+
+### Routes
+
+Define **qual URL chama qual função**.
+
+```javascript
+router.get('/', usuarioController.index);
+router.get('/criar', usuarioController.criarForm);
+router.post('/', usuarioController.criar);
+router.get('/:id/editar', usuarioController.editarForm);
+router.put('/:id', usuarioController.editar);
+router.delete('/:id', usuarioController.excluir);
+```
+
+### Controller
+
+Recebe a requisição HTTP e decide o que fazer.
+
+```javascript
+exports.index = async (req, res) => {
+    const usuarios = await usuarioService.listar();
+
+    res.render('usuarios/index', {
+        usuarios
+    });
+};
+```
+
+O controller **não deveria conter toda a regra de negócio**.
+
+---
+
+# 4. Service
+
+A camada `services` é especialmente interessante para deixar o projeto preparado para crescer.
+
+Exemplo:
+
+```javascript
+const usuarioModel = require('../models/usuarioModel');
+
+exports.listar = async () => {
+    return await usuarioModel.listar();
+};
+
+exports.buscarPorId = async (id) => {
+    return await usuarioModel.buscarPorId(id);
+};
+
+exports.criar = async (dados) => {
+
+    if (!dados.nome) {
+        throw new Error('Nome é obrigatório');
+    }
+
+    if (!dados.email) {
+        throw new Error('Email é obrigatório');
+    }
+
+    return await usuarioModel.criar(dados);
+};
+
+exports.editar = async (id, dados) => {
+    return await usuarioModel.editar(id, dados);
+};
+
+exports.excluir = async (id) => {
+    return await usuarioModel.excluir(id);
+};
+```
+
+Isso permite posteriormente colocar aqui:
+
+* validações;
+* regras de negócio;
+* cálculos;
+* permissões;
+* processamento;
+* integração com APIs externas.
+
+---
+
+# 5. Model
+
+O `Model` será responsável pela comunicação com o banco.
+
+Por exemplo:
+
+```javascript
+const db = require('../config/database');
+
+exports.listar = async () => {
+    const [usuarios] = await db.query(
+        'SELECT * FROM usuarios'
+    );
+
+    return usuarios;
+};
+
+exports.buscarPorId = async (id) => {
+    const [usuarios] = await db.query(
+        'SELECT * FROM usuarios WHERE id = ?',
+        [id]
+    );
+
+    return usuarios[0];
+};
+
+exports.criar = async (dados) => {
+    const [resultado] = await db.query(
+        'INSERT INTO usuarios (nome, email) VALUES (?, ?)',
+        [dados.nome, dados.email]
+    );
+
+    return resultado;
+};
+```
+
+Aqui estou utilizando SQL apenas como exemplo. Você pode posteriormente trocar por:
+
+* MySQL;
+* PostgreSQL;
+* SQLite;
+* MongoDB;
+* Prisma;
+* Sequelize;
+* outro ORM/ODM.
+
+---
+
+# 6. CRUD
+
+O CRUD representa as quatro operações fundamentais:
+
+| Operação | HTTP      | Exemplo         |
+| -------- | --------- | --------------- |
+| Create   | POST      | Criar usuário   |
+| Read     | GET       | Listar usuários |
+| Update   | PUT/PATCH | Editar usuário  |
+| Delete   | DELETE    | Excluir usuário |
+
+Um conjunto de rotas poderia ser:
+
+```text
+GET     /usuarios
+GET     /usuarios/criar
+POST    /usuarios
+GET     /usuarios/:id
+GET     /usuarios/:id/editar
+PUT     /usuarios/:id
+DELETE  /usuarios/:id
+```
+
+Visualmente:
+
+```text
+/usuarios
+    │
+    ├── GET  → listar
+    │
+    ├── GET  /criar → formulário
+    │
+    ├── POST → criar
+    │
+    ├── GET  /:id → detalhes
+    │
+    ├── GET  /:id/editar → formulário
+    │
+    ├── PUT  /:id → atualizar
+    │
+    └── DELETE /:id → excluir
+```
+
+---
+
+# 7. Views com EJS
+
+A pasta:
+
+```text
+views/
+└── usuarios/
+    ├── index.ejs
+    ├── criar.ejs
+    ├── editar.ejs
+    └── detalhes.ejs
+```
+
+representa as páginas do sistema.
+
+Por exemplo:
+
+### `index.ejs`
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <h1>Usuários</h1>
+
+    <a href="/usuarios/criar">
+        Novo usuário
+    </a>
+
+    <ul>
+
+        <% usuarios.forEach(usuario => { %>
+
+            <li>
+                <strong>
+                    <%= usuario.nome %>
+                </strong>
+
+                <span>
+                    <%= usuario.email %>
+                </span>
+
+                <a href="/usuarios/<%= usuario.id %>">
+                    Ver
+                </a>
+
+                <a href="/usuarios/<%= usuario.id %>/editar">
+                    Editar
+                </a>
+            </li>
+
+        <% }) %>
+
+    </ul>
+
+    <script src="/js/script.js"></script>
+
+</body>
+</html>
+```
+
+O EJS permite misturar HTML com JavaScript do servidor.
+
+Por exemplo:
+
+```ejs
+<%= usuario.nome %>
+```
+
+exibe uma variável.
+
+Enquanto:
+
+```ejs
+<% usuarios.forEach(usuario => { %>
+
+<% }) %>
+```
+
+executa código JavaScript sem necessariamente imprimir seu resultado.
+
+---
+
+# 8. CSS
+
+O CSS fica separado:
+
+```text
+src/
+└── public/
+    └── css/
+        └── style.css
+```
+
+Por exemplo:
+
+```css
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+button,
+a {
+    cursor: pointer;
+}
+```
+
+Depois você pode evoluir para:
+
+```text
+public/
+├── css/
+│   ├── style.css
+│   ├── components.css
+│   ├── forms.css
+│   └── responsive.css
+│
+└── js/
+    ├── script.js
+    ├── form.js
+    └── usuarios.js
+```
+
+---
+
+# 9. JavaScript do navegador
+
+Uma distinção importante:
+
+**JavaScript no Node.js ≠ JavaScript no navegador.**
+
+Você terá dois ambientes.
+
+### Backend
+
+```text
+Node.js
+Express
+EJS
+Controllers
+Services
+Models
+```
+
+### Frontend
+
+```text
+HTML
+CSS
+JavaScript
+```
+
+Por exemplo:
+
+```javascript
+const botoesExcluir = document.querySelectorAll('.btn-excluir');
+
+botoesExcluir.forEach(botao => {
+
+    botao.addEventListener('click', (event) => {
+
+        const confirmar = confirm(
+            'Deseja realmente excluir este usuário?'
+        );
+
+        if (!confirmar) {
+            event.preventDefault();
+        }
+
+    });
+
+});
+```
+
+O JS do navegador pode cuidar de:
+
+* interações;
+* validações simples;
+* modais;
+* menus;
+* requisições `fetch`;
+* manipulação do DOM;
+* feedback visual.
+
+---
+
+# 10. Banco de dados
+
+Eu sugiro não começar imediatamente pelo banco.
+
+Primeiro faça:
+
+```text
+HTML
+ ↓
+EJS
+ ↓
+Express
+ ↓
+Rotas
+ ↓
+Controller
+```
+
+Depois introduza:
+
+```text
+Controller
+ ↓
+Service
+ ↓
+Model
+ ↓
+Banco
+```
+
+Por exemplo, uma tabela inicial:
+
+```sql
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+---
+
+# 11. Ordem recomendada para desenvolver
+
+Essa parte é importante.
+
+Eu **não recomendo criar todas as pastas primeiro e depois tentar descobrir o que colocar nelas**.
+
+Faça incrementalmente.
+
+## Etapa 1 — Criar o projeto
+
+```bash
+mkdir meu-projeto
+cd meu-projeto
+
+npm init -y
+```
+
+Depois:
+
+```bash
+npm install express ejs dotenv
+```
+
+Durante o desenvolvimento:
+
+```bash
+npm install --save-dev nodemon
+```
+
+No `package.json`:
+
+```json
+{
+    "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js"
+    }
+}
+```
+
+---
+
+# 12. Etapa 2 — Criar o servidor
+
+Comece apenas com:
+
+```text
+meu-projeto/
+├── app.js
+└── package.json
+```
+
+Faça o servidor responder:
+
+```text
+GET /
+```
+
+com:
+
+```html
+<h1>Meu primeiro projeto</h1>
+```
+
+**Objetivo:** entender Express.
+
+---
+
+# 13. Etapa 3 — Introduzir EJS
+
+Crie:
+
+```text
+src/
+└── views/
+    └── home.ejs
+```
+
+E faça:
+
+```javascript
+app.get('/', (req, res) => {
+    res.render('home');
+});
+```
+
+Agora você tem:
+
+```text
+Browser
+   ↓
+Express
+   ↓
+EJS
+   ↓
+HTML
+   ↓
+Browser
+```
+
+---
+
+# 14. Etapa 4 — CSS e JavaScript
+
+Crie:
+
+```text
+src/public/
+
+├── css/
+│   └── style.css
+│
+└── js/
+    └── script.js
+```
+
+Configure:
+
+```javascript
+app.use(express.static(
+    path.join(__dirname, 'src/public')
+));
+```
+
+Agora:
+
+```html
+<link rel="stylesheet" href="/css/style.css">
+
+<script src="/js/script.js"></script>
+```
+
+---
+
+# 15. Etapa 5 — Criar o primeiro CRUD
+
+Aqui eu recomendo utilizar **Usuários** como exemplo.
+
+Crie:
+
+```text
+controllers/
+    usuarioController.js
+
+models/
+    usuarioModel.js
+
+routes/
+    usuarioRoutes.js
+
+views/
+    usuarios/
+        index.ejs
+        criar.ejs
+        editar.ejs
+        detalhes.ejs
+```
+
+Primeiro faça somente:
+
+```text
+READ
+```
+
+Ou seja:
+
+```text
+GET /usuarios
+```
+
+e mostre:
+
+```text
+João
+Maria
+Carlos
+```
+
+Você pode inicialmente deixar os dados "falsos":
+
+```javascript
+const usuarios = [
+    {
+        id: 1,
+        nome: 'João',
+        email: 'joao@email.com'
+    },
+    {
+        id: 2,
+        nome: 'Maria',
+        email: 'maria@email.com'
+    }
+];
+```
+
+Isso permite aprender MVC **antes de adicionar a complexidade do banco**.
+
+---
+
+# 16. Etapa 6 — CREATE
+
+Depois implemente:
+
+```text
+GET  /usuarios/criar
+POST /usuarios
+```
+
+Fluxo:
+
+```text
+Usuário
+   ↓
+formulário EJS
+   ↓
+POST /usuarios
+   ↓
+Route
+   ↓
+Controller
+   ↓
+Service
+   ↓
+Model
+   ↓
+Database
+```
+
+---
+
+# 17. Etapa 7 — UPDATE
+
+Depois:
+
+```text
+GET /usuarios/:id/editar
+PUT /usuarios/:id
+```
+
+Fluxo:
+
+```text
+Lista
+  ↓
+Editar
+  ↓
+Formulário
+  ↓
+PUT
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Model
+  ↓
+Database
+```
+
+---
+
+# 18. Etapa 8 — DELETE
+
+Por último:
+
+```text
+DELETE /usuarios/:id
+```
+
+Adicione uma confirmação no frontend:
+
+```text
+Você realmente deseja excluir?
+        ↓
+      [SIM]
+        ↓
+     DELETE
+```
+
+---
+
+# 19. Um detalhe importante: HTML Forms
+
+HTML tradicional trabalha principalmente com:
+
+```html
+<form method="GET">
+```
+
+ou:
+
+```html
+<form method="POST">
+```
+
+Para fazer `PUT` e `DELETE`, você pode posteriormente estudar o middleware:
+
+```text
+method-override
+```
+
+Instalação:
+
+```bash
+npm install method-override
+```
+
+E então:
+
+```javascript
+const methodOverride = require('method-override');
+
+app.use(methodOverride('_method'));
+```
+
+O formulário poderia utilizar:
+
+```html
+<form method="POST" action="/usuarios/<%= usuario.id %>?_method=DELETE">
+```
+
+Assim você mantém a semântica do CRUD sem precisar transformar tudo em `fetch`.
+
+---
+
+# 20. Estrutura final do fluxo
+
+Depois de implementar tudo, você terá aproximadamente:
+
+```text
+                     BROWSER
+                        │
+             ┌──────────┴──────────┐
+             │                     │
+           HTML                  JS/CSS
+             │
+             ▼
+          EXPRESS
+             │
+           ROUTES
+             │
+             ▼
+        CONTROLLERS
+             │
+             ▼
+          SERVICES
+             │
+             ▼
+           MODELS
+             │
+             ▼
+          DATABASE
+```
+
+E para retornar:
+
+```text
+DATABASE
+   ↓
+MODEL
+   ↓
+SERVICE
+   ↓
+CONTROLLER
+   ↓
+EJS
+   ↓
+HTML
+   ↓
+BROWSER
+```
+
+---
+
+# 21. O que estudar em cada etapa
+
+Eu organizaria seu aprendizado assim:
+
+| Fase | Estudar    | Resultado                   |
+| ---- | ---------- | --------------------------- |
+| 1    | HTML       | Estrutura das páginas       |
+| 2    | CSS        | Aparência/layout            |
+| 3    | JavaScript | Interatividade              |
+| 4    | Node.js    | Backend                     |
+| 5    | Express    | Servidor/rotas              |
+| 6    | EJS        | Templates                   |
+| 7    | MVC        | Organização                 |
+| 8    | CRUD       | Operações de dados          |
+| 9    | SQL        | Banco de dados              |
+| 10   | Services   | Regras de negócio           |
+| 11   | Middleware | Autenticação/validação      |
+| 12   | APIs       | Integração frontend/backend |
+| 13   | Testes     | Confiabilidade              |
+| 14   | Segurança  | Proteção da aplicação       |
+| 15   | Deploy     | Colocar o sistema online    |
+
+---
+
+# 22. Caminho para aprofundamento
+
+Depois que esse projeto funcionar, você pode evoluir para:
+
+```text
+CRUD básico
+    │
+    ├── Validação
+    │
+    ├── Tratamento de erros
+    │
+    ├── Banco de dados
+    │
+    ├── Autenticação
+    │
+    ├── Autorização
+    │
+    ├── Sessões
+    │
+    ├── Upload de arquivos
+    │
+    ├── Paginação
+    │
+    ├── Busca/filtros
+    │
+    ├── API REST
+    │
+    ├── Testes
+    │
+    ├── Logs
+    │
+    ├── Segurança
+    │
+    └── Deploy
+```
+
+Uma evolução interessante seria chegar a:
+
+```text
+                    FRONTEND
+               HTML / CSS / JS
+                       │
+                       ▼
+                 EXPRESS API
+                       │
+              ┌────────┴────────┐
+              │                 │
+         MIDDLEWARE          ROUTES
+              │                 │
+              └────────┬────────┘
+                       ▼
+                  CONTROLLER
+                       │
+                       ▼
+                    SERVICE
+                       │
+                       ▼
+                     MODEL
+                       │
+                       ▼
+                   DATABASE
+```
+
+Isso te prepara para posteriormente substituir EJS por React, Vue ou outro frontend, **sem precisar destruir toda a lógica do backend**.
+
+---
+
+# 23. Uma sugestão de projeto para aprender tudo isso
+
+Em vez de fazer apenas um CRUD genérico de usuários, você pode construir um pequeno **sistema de gerenciamento de tarefas**:
+
+```text
+Sistema de Tarefas
+
+Usuários
+   │
+   └── Tarefas
+          │
+          ├── título
+          ├── descrição
+          ├── status
+          ├── prioridade
+          ├── prazo
+          └── usuário responsável
+```
+
+Isso permite estudar progressivamente:
+
+### Versão 1
+
+```text
+HTML
+CSS
+JS
+```
+
+Página estática.
+
+### Versão 2
+
+```text
+Node
+Express
+EJS
+```
+
+Páginas dinâmicas.
+
+### Versão 3
+
+```text
+MVC
+```
+
+Separação das responsabilidades.
+
+### Versão 4
+
+```text
+CRUD
+```
+
+Criar, visualizar, editar e excluir tarefas.
+
+### Versão 5
+
+```text
+SQL
+```
+
+Persistência real.
+
+### Versão 6
+
+```text
+Login
+Sessão
+Autenticação
+```
+
+### Versão 7
+
+```text
+Relacionamentos
+Usuários → Tarefas
+```
+
+### Versão 8
+
+```text
+API REST
+```
+
+### Versão 9
+
+```text
+Testes
+Segurança
+Deploy
+```
+
+Esse caminho é excelente porque **cada nova funcionalidade exige que você aprenda uma parte nova da arquitetura**, em vez de simplesmente copiar uma estrutura pronta.
