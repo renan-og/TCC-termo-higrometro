@@ -1,0 +1,24 @@
+{
+  "name": "tcc-termo-higrometro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renan-og/TCC-termo-higrometro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/renan-og/TCC-termo-higrometro/issues"
+  },
+  "homepage": "https://github.com/renan-og/TCC-termo-higrometro#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
