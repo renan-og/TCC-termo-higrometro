@@ -1,11 +1,12 @@
-const app = require("./server");
+const express = require('express');
+const app = express();
+const port = 3000;
 
-app.post("/dados", (req, res)=>{
-    ultimoDado = req.body();
-    console.log(`ultimos dados: ${ultimoDado}`);
-    res.status(200).json({menssagem : "sucesso"});
+const ESP32_URL = 'http://10.129.173.163/dados'
+
+app.listen(port, ()=>{
+    console.log(`servidor rodando na porta ${port}`);
 })
 
-app.get("/dados", (req, res)=>{
-    res.json(ultimoDado);
-})
+module.exports = app;
+module.exports = ESP32_URL;
