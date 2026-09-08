@@ -9,4 +9,3 @@ app.listen(port, ()=>{
 })
 
 module.exports = app;
-module.exports = ESP32_URL;

@@ -1,9 +1,6 @@
-const app = require("./app.js");
-const ESP32_URL = 'http://10.129.173.163/dados';
+const app = require('./app.js');
+const ESP32_URL = 'http://192.168.0.110/dados';
 
-app.listen(port, ()=>{
-    console.log(`servidor rodando na porta ${port}`);
-})
 app.get('/dados', async (req, res) => {
     try{
         const response = await fetch (ESP32_URL, {
@@ -24,5 +21,3 @@ app.get('/dados', async (req, res) => {
         });
     }
 });
-
-module.export = app;
