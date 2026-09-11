@@ -1,4 +1,4 @@
-const app = require('./app.js');
+const app = require('./src/app.js');
 const ESP32_URL = 'http://192.168.0.110/dados';
 
 app.get('/dados', async (req, res) => {
