@@ -1,11 +1,32 @@
 :root {
+    --color-surface: #f3f7fd;
     --color-background: #bad1f6;
-    --color-surface: #FFFFFF;
     --color-primary: #061e47;
-    --color-text: #061e47;
+    --color-text-primary: #061e47;
     --color-text-secondary: #bad1f6;
     
     --color-success: #4984ea;
     --color-warning: #061e47;
     
+    --space-1: 4;
+    --space-2: 8;
+    --space-3: 12;
+    --space-4: 16;
+    --space-5: 24;
+    --space-6: 32;
+    --space-7: 48;
+    --space-8: 64;
+
+    --border-radius-default: 24;
+    --border-radius-max: 999;
+
+    --font-size-default: 24px;
+    --font-size-highlight: 72px;
+    --font-size-small: 18px;
+
+    --font-weight-default: 600;
+    --font-weight-highlight: 800;
+    --font-weight-small: 600 Italic;
+    
+
 }

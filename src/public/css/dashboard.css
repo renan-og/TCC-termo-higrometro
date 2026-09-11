@@ -1,0 +1,140 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 80px;
+
+    padding: 0;
+    
+    background: var(--color-primary);
+}
+
+.header-left,
+.header-right {
+    flex: 1;
+}
+
+.header-left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.header-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.dashboard-main {
+    display: flex;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.dashboard-left {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-7) var(--space-8);
+    flex: 1;
+}
+
+.dashboard-right {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-7) var(--space-8);
+    flex: 1;
+}
+
+.device-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: var(--space-5);
+}
+
+.metric-card {
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-surface);
+    border-radius: var(--border-radius-default);
+
+}
+
+.metric-card-label {
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-default);
+}
+
+.metric-card-value {
+    font-size: var(--font-size-highlight);
+    font-weight: var(--font-weight-highlight);
+}
+
+.metric-card-update {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-small);
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+
+    width: fit-content;
+
+    padding: var(--space-1) var(--space-6);
+
+    border-radius: var(--border-radius-max);
+
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.graph-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+
+    padding: var(--space-6);
+
+    background: var(--color-surface);
+    border-radius: var(--border-radius-default);
+}
+
+.graph-placeholder {
+    min-height: 280px;
+
+    display: flex;
+    place-items: center;
+
+    padding: var(--space-7) var(--space-8);
+;
+    border-radius: var(--border-radius-default);
+
+    color: var(--color-background);
+}
+
+@media (max-width: 768px) {
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .device-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-4);
+    }
+
+    .header {
+        padding: 0 var(--space-4);
+    }
+}

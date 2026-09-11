@@ -17,17 +17,15 @@
 
         <header class="header">
 
-            <button class="header__fullscreen">
-                Tela Cheia
-            </button>
-
-            <div class="header__logo">
-                SENSORA
+            <div class="header_left">            
+                <button class="header_fullscreen">
+                Tela Cheia</button>
             </div>
 
-            <button class="header__profile">
-                Perfil
-            </button>
+            <div class="header_light">
+                <button class="header_profile">
+                <img src="/src/public/img/profile.png" alt="Ícone de Perfi"></button>
+            </div>
 
         </header>
 
@@ -36,7 +34,7 @@
 
             <div class="device-header">
                 <button class="device-selector">
-                    Dispositivos
+                    <img src="/src/public/img/menu.png" alt="Menu de Dispositivos">
                 </button>
 
                 <div class="device-info">
@@ -57,11 +55,11 @@
 
                 <article class="metric-card">
 
-                    <span class="metric-card__label">
+                    <span class="metric-card-label">
                         Temperatura
                     </span>
 
-                    <strong class="metric-card__value">
+                    <strong class="metric-card-value">
                         <%= sensor.temperatura %>°C
                     </strong>
 
@@ -69,7 +67,7 @@
                         ● Normal
                     </span>
 
-                    <small class="metric-card__update">
+                    <small class="metric-card-update">
                         Atualizado há <%= sensor.ultimaAtualizacao %> segundos
                     </small>
 
@@ -78,11 +76,11 @@
 
                 <article class="metric-card">
 
-                    <span class="metric-card__label">
+                    <span class="metric-card-label">
                         Umidade
                     </span>
 
-                    <strong class="metric-card__value">
+                    <strong class="metric-card-value">
                         <%= sensor.umidade %>%
                     </strong>
 
@@ -90,7 +88,7 @@
                         ● Alerta
                     </span>
 
-                    <small class="metric-card__update">
+                    <small class="metric-card-update">
                         Atualizado há <%= sensor.ultimaAtualizacao %> segundos
                     </small>
 
