@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sensora</title>
+
+    <link rel="stylesheet" href="/src/public/css/variables.css">
+    <link rel="stylesheet" href="/src/public/css/base.css">
+    <link rel="stylesheet" href="/src/public/css/dashboard.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <header class="header">
+
+            <button class="header__fullscreen">
+                Tela Cheia
+            </button>
+
+            <div class="header__logo">
+                SENSORA
+            </div>
+
+            <button class="header__profile">
+                Perfil
+            </button>
+
+        </header>
+
+
+        <main class="dashboard">
+
+            <div class="device-header">
+                <button class="device-selector">
+                    Dispositivos
+                </button>
+
+                <div class="device-info">
+
+                    <h1>
+                        <%= sensor.nome %>
+                    </h1>
+
+                    <span class="status status--connected">
+                        ● Conectado
+                    </span>
+
+                </div>
+            </div>
+
+
+            <section class="dashboard-grid">
+
+                <article class="metric-card">
+
+                    <span class="metric-card__label">
+                        Temperatura
+                    </span>
+
+                    <strong class="metric-card__value">
+                        <%= sensor.temperatura %>°C
+                    </strong>
+
+                    <span class="status status--normal">
+                        ● Normal
+                    </span>
+
+                    <small class="metric-card__update">
+                        Atualizado há <%= sensor.ultimaAtualizacao %> segundos
+                    </small>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <span class="metric-card__label">
+                        Umidade
+                    </span>
+
+                    <strong class="metric-card__value">
+                        <%= sensor.umidade %>%
+                    </strong>
+
+                    <span class="status status--warning">
+                        ● Alerta
+                    </span>
+
+                    <small class="metric-card__update">
+                        Atualizado há <%= sensor.ultimaAtualizacao %> segundos
+                    </small>
+
+                </article>
+
+
+                <article class="graph-card">
+
+                    <h2>
+                        Gráfico de Temperatura — 24h
+                    </h2>
+
+                    <div class="graph-placeholder">
+                        Gráfico
+                    </div>
+
+                    <small>
+                        Atualizado há <%= sensor.ultimaAtualizacao %> segundos
+                    </small>
+
+                </article>
+
+            </section>
+
+        </main>
+
+
+        <footer class="footer">
+            SENSORA
+        </footer>
+
+    </div>
+
+</body>
+</html>

@@ -45,10 +45,10 @@ meu-projeto/
 │   │
 │   └── public/
 │       ├── css/
-│       │   └── style.css
+│       │   └── variables.css
 │       │
 │       ├── js/
-│       │   └── script.js
+│       │   └── dashboard.js
 │       │
 │       └── img/
 │
@@ -88,7 +88,7 @@ const express = require('express');
 const path = require('path');
 
 const usuarioRoutes = require('./src/routes/usuarioRoutes');
-
+```
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -106,15 +106,11 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
-```
 
----
 
 # 3. MVC
 
 O coração da arquitetura será:
-
-```text
                 CLIENTE
                    │
                    ▼
@@ -131,11 +127,8 @@ O coração da arquitetura será:
                    │
                    ▼
                DATABASE
-```
 
 E o caminho de volta:
-
-```text
 DATABASE
    │
    ▼
@@ -155,7 +148,7 @@ CONTROLLER
    │
    ▼
 CLIENTE
-```
+
 
 ### Routes
 
@@ -299,7 +292,6 @@ O CRUD representa as quatro operações fundamentais:
 
 Um conjunto de rotas poderia ser:
 
-```text
 GET     /usuarios
 GET     /usuarios/criar
 POST    /usuarios
@@ -307,11 +299,10 @@ GET     /usuarios/:id
 GET     /usuarios/:id/editar
 PUT     /usuarios/:id
 DELETE  /usuarios/:id
-```
+
 
 Visualmente:
 
-```text
 /usuarios
     │
     ├── GET  → listar
@@ -327,7 +318,6 @@ Visualmente:
     ├── PUT  /:id → atualizar
     │
     └── DELETE /:id → excluir
-```
 
 ---
 
@@ -335,14 +325,12 @@ Visualmente:
 
 A pasta:
 
-```text
 views/
 └── usuarios/
     ├── index.ejs
     ├── criar.ejs
     ├── editar.ejs
     └── detalhes.ejs
-```
 
 representa as páginas do sistema.
 
@@ -358,7 +346,7 @@ Por exemplo:
     <meta charset="UTF-8">
     <title>Usuários</title>
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/variables.css">
 </head>
 
 <body>
@@ -395,7 +383,7 @@ Por exemplo:
 
     </ul>
 
-    <script src="/js/script.js"></script>
+    <script src="/js/dashboard.js"></script>
 
 </body>
 </html>
@@ -431,7 +419,7 @@ O CSS fica separado:
 src/
 └── public/
     └── css/
-        └── style.css
+        └── variables.css
 ```
 
 Por exemplo:
@@ -457,20 +445,17 @@ a {
 
 Depois você pode evoluir para:
 
-```text
 public/
 ├── css/
-│   ├── style.css
+│   ├── variables.css
 │   ├── components.css
 │   ├── forms.css
 │   └── responsive.css
 │
 └── js/
-    ├── script.js
+    ├── dashboard.js
     ├── form.js
     └── usuarios.js
-```
-
 ---
 
 # 9. JavaScript do navegador
@@ -540,7 +525,6 @@ Eu sugiro não começar imediatamente pelo banco.
 
 Primeiro faça:
 
-```text
 HTML
  ↓
 EJS
@@ -550,11 +534,9 @@ Express
 Rotas
  ↓
 Controller
-```
 
 Depois introduza:
 
-```text
 Controller
  ↓
 Service
@@ -562,7 +544,6 @@ Service
 Model
  ↓
 Banco
-```
 
 Por exemplo, uma tabela inicial:
 
@@ -687,10 +668,10 @@ Crie:
 src/public/
 
 ├── css/
-│   └── style.css
+│   └── variables.css
 │
 └── js/
-    └── script.js
+    └── dashboard.js
 ```
 
 Configure:
@@ -704,9 +685,9 @@ app.use(express.static(
 Agora:
 
 ```html
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/variables.css">
 
-<script src="/js/script.js"></script>
+<script src="/js/dashboard.js"></script>
 ```
 
 ---

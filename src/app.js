@@ -5,7 +5,13 @@ const port = 3000;
 const ESP32_URL = 'http://10.129.173.163/dados'
 
 app.listen(port, ()=>{
-    console.log(`servidor rodando na porta ${port}`);
+    console.log(`Servidor rodando na porta ${port}`);
 })
+
+app.set('view engine', 'ejs');
+
+app.get('/', (req, res) => {
+    res.render('main');
+});
 
 module.exports = app;
