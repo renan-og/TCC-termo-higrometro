@@ -1,24 +1,28 @@
 {
-  "name": "sensora",
+  "name": "tcc-termo-higrometro",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "npx nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renan-og/TCC-termo-higrometro.git"
   },
   "keywords": [],
-  "author": "belle e lu",
+  "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/renan-og/TCC-termo-higrometro/issues"
+  },
+  "homepage": "https://github.com/renan-og/TCC-termo-higrometro#readme",
   "dependencies": {
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
-    "express": "^5.2.1"
-  },
-  "devDependencies": {
+    "express": "^5.2.1",
     "nodemon": "^3.1.14"
   }
-  
 }
