@@ -1,3 +1,6 @@
+//declaração do esp pra n ficar vazio
+const ESP32_URL = 'http://10.129.173.163/dados';
+
 const obterDados = async (req, res) => {
     try{
         const response = await fetch (ESP32_URL, {
@@ -18,8 +21,12 @@ const obterDados = async (req, res) => {
         });
     }
 };
-setInterval(obterDados(), 5000); //recarregar a página inteira a cada 5 segundos 
+
+//removi o set pq tava dando erro, vou tentar corrigir dps no js da interface.
+//setInterval(obterDados(), 5000); //recarregar a página inteira a cada 5 segundos 
 
 
 
-module.exports = obterDados;
+module.exports = {
+    obterDados
+};
