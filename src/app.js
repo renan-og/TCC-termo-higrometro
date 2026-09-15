@@ -8,10 +8,14 @@ app.listen(port, ()=>{
     console.log(`Servidor rodando na porta ${port}`);
 })
 
+//tentativa de rodar o ejs
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
-    res.render('main');
+    res.render('dashboard');
 });
+
+const routes = require('./routes/routes');
+app.use('/', routes);
 
 module.exports = app;

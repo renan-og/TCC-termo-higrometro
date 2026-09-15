@@ -1,0 +1,44 @@
+:root {
+  --medium-value: 24;
+  --destaque-value: {Medium}*2;
+  
+  --fonte-destaque-type: typography;
+  --fonte-destaque-value-font-families: 'Inter Tight';
+  --fonte-destaque-value-font-sizes: 72;
+  --fonte-destaque-value-font-weights: 800;
+  --fonte-destaque-value-letter-spacing: 0;
+  --fonte-destaque-value-line-heights: 1.2;
+  --fonte-destaque-value-text-case: Capitalize;
+  --fonte-destaque-value-text-decoration: none;
+  
+  --fonte-media-type: typography;
+  --fonte-media-value-font-families: 'Inter Tight';
+  --fonte-media-value-font-sizes: {Medium};
+  --fonte-media-value-font-weights: 600;
+  --fonte-media-value-letter-spacing: 0;
+  --fonte-media-value-line-heights: 1.2;
+  --fonte-media-value-text-case: Capitalize;
+  --fonte-media-value-text-decoration: none;
+  
+  --fonte-small-type: typography;
+  --fonte-small-value-font-families: 'Inter Tight';
+  --fonte-small-value-font-sizes: 16;
+  --fonte-small-value-font-weights: '600 Italic';
+  --fonte-small-value-letter-spacing: 0;
+  --fonte-small-value-line-heights: 1.2;
+  --fonte-small-value-text-case: Capitalize;
+  --fonte-small-value-text-decoration: none;
+
+  
+  --space-1-value: 4;
+  --space-2-value: 8;
+  --space-3-value: 12;
+  --space-4-value: 16;
+  --space-5-value: 24;
+  --space-6-value: 32;
+  --space-7-value: 48;
+  --space-8-value: 64;
+
+  --title-type: fontSizes;
+  --title-value: {Medium}+12;
+}
