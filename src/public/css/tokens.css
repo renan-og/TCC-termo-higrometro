@@ -30,14 +30,14 @@
   --fonte-small-value-text-decoration: none;
 
   
-  --space-1-value: 4;
-  --space-2-value: 8;
-  --space-3-value: 12;
-  --space-4-value: 16;
-  --space-5-value: 24;
-  --space-6-value: 32;
-  --space-7-value: 48;
-  --space-8-value: 64;
+  --space-1-value: 4px;
+  --space-2-value: 8px;
+  --space-3-value: 12px;
+  --space-4-value: 16px;
+  --space-5-value: 24px;
+  --space-6-value: 32px;
+  --space-7-value: 48px;
+  --space-8-value: 64px;
 
   --title-type: fontSizes;
   --title-value: {Medium}+12;
