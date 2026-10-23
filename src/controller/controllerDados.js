@@ -1,6 +1,6 @@
 const obterDados = async (req, res) => {
     try{
-        const response = await fetch (ESP32_URL, {
+        const response = await fetch (' ', {
             signal: AbortSignal.timeout(8000)
         });
 
@@ -18,8 +18,5 @@ const obterDados = async (req, res) => {
         });
     }
 };
-setInterval(obterDados(), 5000); //recarregar a página inteira a cada 5 segundos 
 
-
-
-module.exports = obterDados;
+module.exports = {obterDados};
