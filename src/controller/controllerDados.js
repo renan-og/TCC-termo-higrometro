@@ -1,3 +1,6 @@
+//declaração do esp pra n ficar vazio
+const ESP32_URL = 'http://10.129.173.163/dados';
+
 const obterDados = async (req, res) => {
     try{
         const response = await fetch (' ', {
@@ -19,4 +22,6 @@ const obterDados = async (req, res) => {
     }
 };
 
-module.exports = {obterDados};
+module.exports = {
+    obterDados
+};

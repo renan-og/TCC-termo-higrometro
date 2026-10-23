@@ -13,16 +13,27 @@
 .header-left,
 .header-right {
     flex: 1;
+    display: flex;
+    align-items: center;
 }
 
 .header-left {
-    display: flex;
     justify-content: flex-start;
 }
 
 .header-right {
-    display: flex;
     justify-content: flex-end;
+    gap: var(--space-4);
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 60;
+    
+    background: var(--color-primary)
 }
 
 .dashboard-main {
@@ -83,8 +94,33 @@
     font-weight: var(--font-weight-small);
 }
 
+.graph-title {
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-default);
+}
+.graph-update {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-small);
+}
+
+.img-flex {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Crops the edges, preserves aspect ratio */
+}
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
 .status {
     display: inline-flex;
+    justify-content: center;
+    justify-items: center;
     align-items: center;
     gap: var(--space-2);
 

@@ -1,5 +1,25 @@
 const app = require('./src/app.js');
-const ESP32_URL = 'http://192.168.0.110/dados';
+const port = 3000;
+
+//comentei pra testar o front
+//const ESP32_URL = 'http://192.168.0.110/dados';
+
+app.listen(port, ()=>{
+    console.log(`Servidor rodando na porta ${port}`);
+})
+
+
+/* app.get('/', (req, res) => {
+    res.render('dashboard');
+}); */
+
+//Teste de rotas (problema no controller)
+//const routes = require('./routes/routes');
+//app.use('/', routes);
+
+/* app.get('/teste', (req, res) => {
+    res.send('Servidor funcionando!!!!');
+});
 
 app.get('/dados', async (req, res) => {
     try{
@@ -20,4 +40,4 @@ app.get('/dados', async (req, res) => {
             detalhes: error.message
         });
     }
-});
+}); */

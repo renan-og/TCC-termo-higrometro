@@ -5,7 +5,7 @@ const controllerDados = require('../controller/controllerDados');
 
 router.get('/dados', controllerDados.obterDados);
 
-//Dados fícticios pra testar e algumas variáveis supostas, @renan-og corrige dps
+//Dados fícticios pra testar o front e algumas variáveis supostas, @renan-og corrige dps
 //Rota do site
 router.get('/monitoramento', (req, res) => {
 
