@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Sensora</title>
+    <title>dadosa</title>
 
     <link rel="stylesheet" href="/css/variables.css" />
     <link rel="stylesheet" href="/css/base.css" />
@@ -34,7 +34,13 @@
           </button>
 
           <div class="device-info">
-            <h1><%= sensor.nome %></h1>
+            <% if(response == "erro") {%>
+                <strong>
+                  <%= erro %>
+                </strong>
+              <%}else{%>
+                <h1><%= dados.nome %></h1>
+                <%} %>
 
             <span class="status status--connected"> ● Conectado </span>
           </div>
@@ -44,30 +50,49 @@
           <div class="dashboard-left">
             <article class="metric-card">
               <span class="metric-card-label"> Temperatura </span>
-
-              <strong class="metric-card-value">
-                <%= sensor.temperatura %>°C
-              </strong>
+              <% if(response == "erro") {%>
+                <strong>
+                  <%= erro %>
+                </strong>
+              <%}else{%>
+                <strong class="metric-card-value">
+                  <%= dados.temperatura %>°C
+                </strong>  
+                <%} %>
 
               <span class="status status--normal"> ● Normal </span>
-
+              <% if(response == "erro") {%>
+                <strong>
+                  <%= erro %>
+                </strong>
+              <%}else{%>
               <small class="metric-card-update">
-                Atualizado há <%= sensor.ultimaAtualizacao %> segundos
+                Atualizado há <%= dados.ultimaAtualizacao %> segundos
               </small>
+              <%} %>
             </article>
 
             <article class="metric-card">
               <span class="metric-card-label"> Umidade </span>
-
+              <% if(response == "erro") {%>
+                <strong>
+                  <%= erro %>
+                </strong>
+              <%}else{%>
               <strong class="metric-card-value">
-                <%= sensor.umidade %>%
+                <%= dados.umidade %>%
               </strong>
-
+              <%} %>
               <span class="status status--warning"> ● Alerta </span>
-
+              <% if(response == "erro") {%>
+                <strong>
+                  <%= erro %>
+                </strong>
+              <%}else{%>
               <small class="metric-card-update">
-                Atualizado há <%= sensor.ultimaAtualizacao %> segundos
+                Atualizado há <%= dados.ultimaAtualizacao %> segundos
               </small>
+              <%} %>
             </article>
           </div>
 
@@ -76,10 +101,15 @@
               <span class="graph-title"> Gráfico de Temperatura — 24h </span>
 
               <div class="graph-placeholder">Gráfico</div>
-
+              <% if(response == "erro") {%>
+                <strong>
+                  <%= erro %>
+                </strong>
+              <%}else{%>
               <span class="graph-update">
-                Atualizado há <%= sensor.ultimaAtualizacao %> segundos
+                Atualizado há <%= dados.ultimaAtualizacao %> segundos
               </span>
+              <%} %>
             </article>
           </div>
         </section>
@@ -88,8 +118,8 @@
       <footer class="footer">
         <div class="footer-logo-container">
           <img
-            src="/img/Sensora – Logo.jpg"
-            alt="Logo do Sensora"
+            src="/img/dadosa – Logo.jpg"
+            alt="Logo do dadosa"
             class="footer-logo"
           />
         </div>

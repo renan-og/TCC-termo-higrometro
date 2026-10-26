@@ -9,14 +9,14 @@ router.get('/dados', controllerDados.obterDados);
 //Rota do site
 router.get('/monitoramento', (req, res) => {
 
-    const sensor = {
+    const dados = {
         nome: 'ESP32-001',
         temperatura: 24,
         umidade: 81,
         ultimaAtualizacao: 5
     };
 
-    res.render('dashboard', { sensor });
+    res.render('dashboard', { dados });
 });
 
 module.exports = router;
