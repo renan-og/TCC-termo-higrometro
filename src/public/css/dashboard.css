@@ -1,10 +1,15 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: clamp(60px, 6vw + 10px, 80px);
-  padding: 0;
+  height: clamp(var(--clamp-header));
+  padding: 1vw;
   background: var(--color-primary);
 }
 
@@ -34,8 +39,7 @@
   align-items: center;
   justify-content: center;
 
-  padding: 0;
-  margin: clamp(10px, 1vw + 6px, 16px);
+  margin: clamp(4px, 1vw, 8px);
 }
 
 .header button img {
@@ -45,11 +49,17 @@
   object-fit: cover;
 }
 
+.header-fullscreen img {
+  width: 120%;
+  height: 120%;
+  object-fit: contain;
+}
+
 .footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: clamp(60px, 6vw + 10px, 80px);
+  height: clamp(var(--clamp-header));
   background: var(--color-primary);
 }
 
@@ -67,52 +77,63 @@
   object-position: center;
 }
 
-.dashboard-main {
-  display: flex;
-  max-width: 100%;
+.dashboard {
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
+  padding: clamp(12px, 2vw, 24px);
+  flex: 1;
+}
+
+.dashboard-grid {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(16px, 2vw, 32px);
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  margin: 0;
+  padding: clamp(8px, 1vw, 16px) 0;
 }
 
 .dashboard-left {
   display: flex;
-  justify-content: space-between;
   flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-7) var(--space-8);
-  flex: 1;
+  justify-content: space-between;
+  gap: clamp(16px, 2vw, 24px);
+  
+  flex: 1 1 0;
+  min-width: none;
+  padding: 0;
 }
 
 .dashboard-right {
   display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-7) var(--space-8);
-  flex: 1;
+  flex: 1 1 0;
+  min-width: none;
+  padding: 0;
 }
 
 .device-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: clamp(60px, 6vw + 10px, 80px);
+  height: clamp(var(--clamp-header));
   width: 100%;
-
-  margin-top: var(--space-5);
 }
 
 .device-header button {
   border: none;
   width: clamp(40px, 6vw, 56px);
-  height: clamp(40px, 6vw, 56x);
+  height: clamp(40px, 6vw, 56px);
   background-color: var(--color-primary);
 
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 0;
-  margin: clamp(10px, 1vw + 6px, 16px);
   border-radius: 20%;
 }
 
@@ -128,40 +149,49 @@
   align-items: center;
   justify-content: center;
   flex-direction: row;
+  padding: 0 var(--space-6);
 }
 
 .metric-card {
   display: flex;
   flex-direction: column;
+  gap: clamp(8px, 1.2vw, 16px);
 
-  gap: var(--space-4);
-  padding: var(--space-6);
+  min-width: auto;
+  box-sizing: border-box;
+
+  padding: clamp(16px, 2vw, 28px);
   background: var(--color-surface);
-  border-radius: var(--border-radius-default);
+  border-radius: clamp(16px, 1.5vw, 24px);
 }
 
 .metric-card-label {
-  font-size: var(--font-size-default);
+  font-size: clamp(1rem, 1.5vw, 1.7rem);
   font-weight: var(--font-weight-default);
 }
 
 .metric-card-value {
-  font-size: var(--font-size-highlight);
+  font-size: clamp(2.5rem, 4vw, 4.5rem);
   font-weight: var(--font-weight-highlight);
+  line-height: 1.1;
 }
 
 .metric-card-update {
-  font-size: var(--font-size-small);
+  font-size: clamp(0.8rem, 1vw, 1.1rem);
   font-weight: var(--font-weight-small);
+  font-style: var(--font-style-small);
 }
 
 .graph-title {
-  font-size: var(--font-size-default);
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1rem, 1.5vw, 1.7rem);
   font-weight: var(--font-weight-default);
 }
 .graph-update {
-  font-size: var(--font-size-small);
+  font-size: clamp(0.8rem, 1vw, 1.1rem);
   font-weight: var(--font-weight-small);
+  font-style: var(--font-style-small);
 }
 
 .img-flex {
@@ -183,53 +213,118 @@ img {
   justify-content: center;
   justify-items: center;
   align-items: center;
-  gap: var(--space-2);
+  gap: 1rem;
 
   width: fit-content;
-
-  padding: var(--space-1) var(--space-6);
+  max-width: 100%;
+  padding: 0.4rem 0.6rem;
 
   border-radius: var(--border-radius-max);
 
-  font-size: 32px;
+  font-size: clamp(0.9rem, 1.4vw, 1.5rem);
   font-weight: 600;
 }
 
 .graph-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(12px, 1.5vw, 24px);
 
-  padding: var(--space-6);
-
+  flex: 1;
+  height: 100%;
+  width: 100%;
+  min-width: 0;
+  min-height: 400px;
+  box-sizing: border-box;
+  
+  padding: clamp(16px, 2vw, 28px);
   background: var(--color-surface);
-  border-radius: var(--border-radius-default);
+  border-radius: clamp(16px, 1.5vw, 24px);
+
 }
 
 .graph-placeholder {
-  min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  display: flex;
-  place-items: center;
+    flex: 1;
+    min-height: 220px;
+    padding: clamp(12px, 2vw, 24px);
 
-  padding: var(--space-7) var(--space-8);
-  border-radius: var(--border-radius-default);
-
-  color: var(--color-background);
+    border-radius: var(--border-radius-default);
+    color: var(--color-background);
 }
 
-@media (max-width: 768px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 900px) {
+    .dashboard-grid {
+        flex-direction: column;
+        gap: clamp(16px, 3vw, 24px);
+    }
 
-  .device-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-4);
-  }
+    .dashboard-left,
+    .dashboard-right {
+        width: 100%;
+        flex: none;
+    }
 
-  .header {
-    padding: 0 var(--space-4);
-  }
+    .dashboard-left {
+        gap: clamp(16px, 3vw, 24px);
+    }
+
+    .metric-card {
+        width: 100%;
+    }
+
+    .graph-card {
+        min-height: 280px;
+    }
+
+    .graph-placeholder {
+        min-height: 120px;
+    }
+
+    .device-header {
+        height: auto;
+        min-height: 60px;
+        padding: 12px clamp(12px, 3vw, 24px);
+        gap: 12px;
+    }
+
+    .device-header button {
+        margin-left: 0;
+        flex-shrink: 0;
+    }
+
+    .device-info {
+        padding: 0;
+        gap: 8px;
+        flex-wrap: wrap;
+        min-width: 0;
+    }
+
+    .device-info h1 {
+        margin: 0;
+        font-size: clamp(1rem, 2.5vw, 1.5rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard {
+        padding: 12px;
+    }
+
+    .device-header {
+        padding: 12px 4px;
+    }
+
+    .device-info {
+        justify-content: flex-end;
+    }
+
+    .metric-card {
+        padding: 18px;
+    }
 }

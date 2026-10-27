@@ -29,5 +29,6 @@
     --font-weight-small: 600;
     --font-style-small: italic;
     
+    --clamp-header: 50px, 4vw + 10px, 65px
 
 }
