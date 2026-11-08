@@ -11,13 +11,7 @@ const obterDados = async (req, res) => {
             return res.status(response.status).json({ erro: 'ESP32 retornou erro HTTP'});
         }
 
-        //const dados = await response.json();
-        const dados = {
-            nome: 'ESP32-001',
-            temperatura: 24,
-            umidade: 81,
-            ultimaAtualizacao: 5
-        };
+        const dados = await response.json();
         
         //res.render('dashboard', { sensor });//dados ficticios
         res.render('dashboard', { dados, response });//dados reais do ESP
@@ -31,7 +25,7 @@ const obterDados = async (req, res) => {
             ultimaAtualizacao: "erro"
         };
         console.error('Erro ao conectar ao ESP32:', error.message);
-        res.render('dashboard', { dados, response, erro:'Erro ao se conectar ao ESP32' });
+        res.render('dashboard', { dados, response, erro:'Erro ao se conectar ao ESP32', error });
     }
 };
 
