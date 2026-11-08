@@ -1,5 +1,5 @@
 //declaração do esp pra n ficar vazio
-const ESP32_URL = 'http://192.168.0.110/dados';
+const ESP32_URL = '"https://petalled-anathematically-kathey.ngrok-free.dev/dados"';
 
 const obterDados = async (req, res) => {
     try{
