@@ -1,5 +1,5 @@
 //declaração do esp pra n ficar vazio
-const ESP32_URL = 'https://tcc-termo-higrometro.onrender.com/dados';
+const ESP32_URL = 'http://127.0.0.1:4040';
 
 const obterDados = async (req, res) => {
     try{
