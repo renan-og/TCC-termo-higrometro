@@ -6,7 +6,7 @@ const controllerDados = require('../controller/controllerDados');
 let ultimaLeitura = {
     temperatura: 0,
     umidade: 0,
-    ultimaAtualizacao: 0,
+    tempo: 0,
     nome: "Main-ESP32"
 };
 
@@ -14,7 +14,7 @@ let ultimaLeitura = {
 router.get("/", controllerDados.obterDados);
  */
 router.post('/dados', (req, res) => {
-  const { temperatura, umidade, tempo, nome } = req.body;
+  const { temperatura, umidade, tempo, nome } = req.body || {};
   if (temperatura !== undefined && umidade !== undefined) {
     ultimaLeitura = { temperatura, umidade, tempo, nome };
     return res.status(200).json({ status: 'ok' });
@@ -24,7 +24,7 @@ router.post('/dados', (req, res) => {
 
 // 2. Rota que renderiza o seu frontend EJS
 router.get('/', (req, res) => {
-  res.render('dashboard', { dados: ultimaLeitura, response, erro:'Erro ao se conectar ao ESP32' });
+  res.render('dashboard', { dados: ultimaLeitura, erro:'Erro ao se conectar ao ESP32' });
 });
 //Dados fícticios pra testar o front e algumas variáveis supostas, @renan-og corrige dps
 //Rota do site
