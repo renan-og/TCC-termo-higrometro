@@ -7,10 +7,6 @@ const obterDados = async (req, res) => {
             signal: AbortSignal.timeout(8000)
         });
 
-        /* if(!response.ok) {
-            return res.status(response.status).json({ erro: 'ESP32 retornou erro HTTP'});
-        } */
-
         const dados = await response.json();
         
         //res.render('dashboard', { sensor });//dados ficticios
