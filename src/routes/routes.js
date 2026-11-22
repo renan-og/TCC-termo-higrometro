@@ -3,6 +3,13 @@ const router = express.Router();
 
 const controllerDados = require('../controller/controllerDados');
 
+let ultimaLeitura = {
+    temperatura: 0,
+    umidade: 0,
+    ultimaAtualizacao: 0,
+    nome: "Main-ESP32"
+};
+
 /* router.get('/dados', controllerDados.obterDados);
 router.get("/", controllerDados.obterDados);
  */
