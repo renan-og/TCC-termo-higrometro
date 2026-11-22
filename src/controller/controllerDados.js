@@ -1,5 +1,5 @@
 //declaração do esp pra n ficar vazio
-const ESP32_URL = 'https://petalled-anathematically-kathey.ngrok-free.dev/dados';
+const ESP32_URL = 'https://tcc-termo-higrometro.onrender.com/dados';
 
 const obterDados = async (req, res) => {
     try{
@@ -7,9 +7,9 @@ const obterDados = async (req, res) => {
             signal: AbortSignal.timeout(8000)
         });
 
-        if(!response.ok) {
+        /* if(!response.ok) {
             return res.status(response.status).json({ erro: 'ESP32 retornou erro HTTP'});
-        }
+        } */
 
         const dados = await response.json();
         
