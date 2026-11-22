@@ -29,6 +29,7 @@ const obterDados = async (req, res) => {
     }
 };
 
+
 module.exports = {
     obterDados
 };
