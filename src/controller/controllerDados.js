@@ -1,4 +1,3 @@
-//declaração do esp pra n ficar vazio
 const ESP32_URL = 'https://tcc-termo-higrometro.onrender.com/dados';
 
 const obterDados = async (req, res) => {
@@ -9,7 +8,6 @@ const obterDados = async (req, res) => {
 
         const dados = await response.json();
         
-        //res.render('dashboard', { sensor });//dados ficticios
         res.render('dashboard', { dados, response });//dados reais do ESP
         //return res.json(dados);
     } catch(error) {
