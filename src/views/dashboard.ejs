@@ -104,6 +104,45 @@
               <span class="graph-title"> Gráfico de Temperatura — 24h </span>
 
               <div class="graph-placeholder">Gráfico</div>
+              <script>
+  // Renderiza o gráfico estático com os dados carregados pelo GET /
+  const historico = <%- JSON.stringify(historico || []) %>;
+
+  const ctx = document.getElementById('graficoSensor').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: historico.map(item =>
+        new Date(item.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      ),
+      datasets: [
+        {
+          label: 'Temperatura (°C)',
+          data: historico.map(item => item.temperatura),
+          borderColor: '#ff4d4d',
+          backgroundColor: 'rgba(255, 77, 77, 0.1)',
+          tension: 0.3
+        },
+        {
+          label: 'Umidade (%)',
+          data: historico.map(item => item.umidade),
+          borderColor: '#0066cc',
+          backgroundColor: 'rgba(0, 102, 204, 0.1)',
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  // Dispara a rota POST / a cada 5 segundos em segundo plano sem recarregar a página
+  setInterval(() => {
+    fetch('/', { method: 'POST' }).catch(err => console.error('Falha ao salvar:', err));
+  }, 5000);
+</script>
               <% if(response == "erro") {%>
                 <strong>
                   <%= error %>

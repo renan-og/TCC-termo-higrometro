@@ -3,7 +3,6 @@ const router = express.Router();
 
 const controllerDados = require('../controller/controllerDados');
 
-router.get('/dados', controllerDados.obterDados);
 router.post("/", controllerDados.anotarDados)
 router.get("/", controllerDados.obterDados);
  
