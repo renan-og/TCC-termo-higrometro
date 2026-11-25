@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/variables.css" />
     <link rel="stylesheet" href="/css/base.css" />
     <link rel="stylesheet" href="/css/dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
 
   <body>
@@ -22,7 +23,7 @@
 
         <div class="header-right">
           <button class="header-profile">
-            <img src="/img/profile.png" alt="Ícone de Perfi" />
+            <img src="/img/profile.png" alt="Ícone de Perfil" />
           </button>
         </div>
       </header>
@@ -35,16 +36,11 @@
 
           <div class="device-info">
             <% if(response == "erro") {%>
-                <strong>
-                  <%= error %>
-                </strong>
-              <%}else{%>
-                <h1><%= dados.nome %></h1>
-                <%} %>
-            <% if(response == "erro"){%>
-              <span class="status status--connected"> ● Não conectado </span>    
+              <strong><%= error %></strong>
+              <span class="status status--connected"> ● Não conectado </span>
             <%}else{%>
-              <span class="status status--connected"> ● Conectado </span>           
+              <h1><%= dados.nome %></h1>
+              <span class="status status--connected"> ● Conectado </span>
             <%} %>
           </div>
         </section>
@@ -54,47 +50,30 @@
             <article class="metric-card">
               <span class="metric-card-label"> Temperatura </span>
               <% if(response == "erro") {%>
-                <strong>
-                  <%= error %>
-                </strong>
+                <strong><%= error %></strong>
               <%}else{%>
                 <strong class="metric-card-value">
                   <%= dados.temperatura %>°C
-                </strong>  
-                <%} %>
-
-              <span class="status status--normal"> ● Normal </span>
-              <% if(response == "erro") {%>
-                <strong>
-                  <%= error %>
                 </strong>
-              <%}else{%>
-              <small class="metric-card-update">
-                Atualizado há <%= dados.tempo %> segundos
-              </small>
+                <span class="status status--normal"> ● Normal </span>
+                <small class="metric-card-update">
+                  Atualizado há <%= dados.tempo %> segundos
+                </small>
               <%} %>
             </article>
 
             <article class="metric-card">
               <span class="metric-card-label"> Umidade </span>
               <% if(response == "erro") {%>
-                <strong>
-                  <%= error %>
-                </strong>
+                <strong><%= error %></strong>
               <%}else{%>
-              <strong class="metric-card-value">
-                <%= dados.umidade %>%
-              </strong>
-              <%} %>
-              <span class="status status--warning"> ● Alerta </span>
-              <% if(response == "erro") {%>
-                <strong>
-                  <%= error %>
+                <strong class="metric-card-value">
+                  <%= dados.umidade %>%
                 </strong>
-              <%}else{%>
-              <small class="metric-card-update">
-                Atualizado há <%= dados.tempo %> segundos
-              </small>
+                <span class="status status--warning"> ● Alerta </span>
+                <small class="metric-card-update">
+                  Atualizado há <%= dados.tempo %> segundos
+                </small>
               <%} %>
             </article>
           </div>
@@ -103,54 +82,16 @@
             <article class="graph-card">
               <span class="graph-title"> Gráfico de Temperatura — 24h </span>
 
-              <div class="graph-placeholder">Gráfico</div>
-              <script>
-  // Renderiza o gráfico estático com os dados carregados pelo GET /
-  const historico = <%- JSON.stringify(historico || []) %>;
+              <div class="graph-placeholder" style="position: relative; width: 100%; height: 240px;">
+                <canvas id="graficoSensor"></canvas>
+              </div>
 
-  const ctx = document.getElementById('graficoSensor').getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: historico.map(item =>
-        new Date(item.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-      ),
-      datasets: [
-        {
-          label: 'Temperatura (°C)',
-          data: historico.map(item => item.temperatura),
-          borderColor: '#ff4d4d',
-          backgroundColor: 'rgba(255, 77, 77, 0.1)',
-          tension: 0.3
-        },
-        {
-          label: 'Umidade (%)',
-          data: historico.map(item => item.umidade),
-          borderColor: '#0066cc',
-          backgroundColor: 'rgba(0, 102, 204, 0.1)',
-          tension: 0.3
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false
-    }
-  });
-
-  // Dispara a rota POST / a cada 5 segundos em segundo plano sem recarregar a página
-  setInterval(() => {
-    fetch('/', { method: 'POST' }).catch(err => console.error('Falha ao salvar:', err));
-  }, 5000);
-</script>
               <% if(response == "erro") {%>
-                <strong>
-                  <%= error %>
-                </strong>
+                <strong><%= error %></strong>
               <%}else{%>
-              <span class="graph-update">
-                Atualizado há <%= dados.tempo %> segundos
-              </span>
+                <span class="graph-update">
+                  Atualizado há <%= dados.tempo %> segundos
+                </span>
               <%} %>
             </article>
           </div>
@@ -158,14 +99,55 @@
       </main>
 
       <footer class="footer">
-        <div class="footer-logo-container">
-          <!-- <img
-            src="/img/dados – Logo.jpg"
-            alt="Logo do dadosa"
-            class="footer-logo"
-          /> -->
-        </div>
+        <div class="footer-logo-container"></div>
       </footer>
     </div>
+
+    <script>
+      // 1. Dispara a rota POST / a cada 5 segundos em segundo plano
+      setInterval(() => {
+        fetch('/', { method: 'POST' })
+          .catch(err => console.error('Falha ao salvar:', err));
+      }, 5000);
+
+      // 2. Renderiza o gráfico estático com os dados carregados pelo GET /
+      const historico = <%- JSON.stringify(typeof historico !== 'undefined' ? historico : []) %>;
+      const canvas = document.getElementById('graficoSensor');
+
+      if (canvas && typeof Chart !== 'undefined') {
+        new Chart(canvas.getContext('2d'), {
+          type: 'line',
+          data: {
+            labels: historico.map(item =>
+              new Date(item.createdAt).toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+              })
+            ),
+            datasets: [
+              {
+                label: 'Temperatura (°C)',
+                data: historico.map(item => item.temperatura),
+                borderColor: '#ff4d4d',
+                backgroundColor: 'rgba(255, 77, 77, 0.1)',
+                tension: 0.3
+              },
+              {
+                label: 'Umidade (%)',
+                data: historico.map(item => item.umidade),
+                borderColor: '#0066cc',
+                backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                tension: 0.3
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+    </script>
   </body>
 </html>
