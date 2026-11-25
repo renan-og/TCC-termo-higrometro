@@ -1,4 +1,4 @@
-const ESP32_URL = 'https://tcc-termo-higrometro.onrender.com/dados';
+const ESP32_URL = 'https://petalled-anathematically-kathey.ngrok-free.dev/dados';
 
 const obterDados = async (req, res) => {
     try{
