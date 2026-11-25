@@ -3,6 +3,10 @@ const { Op } = require('sequelize');
 const Leitura = require("../models/valuesModel")
 const ESP32_URL = 'https://petalled-anathematically-kathey.ngrok-free.dev/dados';
 
+const NGROK_HEADERS = {
+  'ngrok-skip-browser-warning': 'true'
+};
+
 const obterDados = async (req, res) => {
     try{
         const response = await fetch (ESP32_URL, {
@@ -26,22 +30,26 @@ const obterDados = async (req, res) => {
     }
 };
 const anotarDados = async (req, res) => {
-    try{
-        const response = await fetch (ESP32_URL, {
-            signal: AbortSignal.timeout(8000)
-        });
+  try {
+    const response = await fetch(ESP32_URL, {
+      headers: NGROK_HEADERS,
+      signal: AbortSignal.timeout(8000)
+    });
 
-        const dados = await response.json();
+    const dados = await response.json();
 
-        const novaLeitura = await Leitura.create({
-            temperatura:dados.temperatura,
-            umidade:dados.umidade
-        })
-    } catch(error){
-        console.error(error);
-        res.status(400);
-    }
-}
+    const novaLeitura = await Leitura.create({
+      temperatura: Number(dados.temperatura),
+      umidade: Number(dados.umidade)
+    });
+
+    // Encerra a requisição HTTP com sucesso
+    return res.status(201).json({ status: 'salvo', id: novaLeitura.id });
+  } catch (error) {
+    console.error('Erro ao anotar dados:', error.message);
+    return res.status(400).json({ erro: error.message });
+  }
+};
 
 
 module.exports = {
