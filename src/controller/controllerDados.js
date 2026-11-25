@@ -42,7 +42,8 @@ const obterDados = async (req, res) => {
       dados,
       response: "erro",
       historico: ultimasLeituras.reverse(),
-      erro: 'Erro ao se conectar ao ESP32'
+      erro: 'Erro ao se conectar ao ESP32',
+      error
     });
   }
 };
@@ -59,7 +60,7 @@ const anotarDados = async (req, res) => {
 
     const novaLeitura = await Leitura.create({
       temperatura: Number(dados.temperatura),
-      umidade: Number(dados.umidade)
+      umidade: Number(dados.umidade),
     });
 
     // Encerra a requisição HTTP com sucesso
