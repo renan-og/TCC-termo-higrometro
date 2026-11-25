@@ -1,3 +1,4 @@
+const { Op, fn, col } = require('sequelize');
 const Leitura = require("../models/valuesModel");
 const ESP32_URL = 'https://petalled-anathematically-kathey.ngrok-free.dev/dados';
 
@@ -5,7 +6,40 @@ const NGROK_HEADERS = {
   'ngrok-skip-browser-warning': 'true'
 };
 
-// GET / -> Renderiza o dashboard com a leitura atual + histórico estático do gráfico
+// Função auxiliar que calcula a média de temperatura e umidade por dia da semana (últimos 7 dias)
+async function obterMediasSemana() {
+  const seteDiasAtras = new Date();
+  seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+
+  const resultados = await Leitura.findAll({
+    attributes: [
+      [fn('DAYOFWEEK', col('createdAt')), 'diaSemana'], // 1 = Dom ... 7 = Sáb
+      [fn('AVG', col('temperatura')), 'mediaTemp'],
+      [fn('AVG', col('umidade')), 'mediaUmid']
+    ],
+    where: {
+      createdAt: { [Op.gte]: seteDiasAtras }
+    },
+    group: [fn('DAYOFWEEK', col('createdAt'))],
+    raw: true
+  });
+
+  // Preenche os 7 dias da semana (0 onde ainda não há leituras)
+  const mediasTemp = [0, 0, 0, 0, 0, 0, 0];
+  const mediasUmid = [0, 0, 0, 0, 0, 0, 0];
+
+  resultados.forEach(item => {
+    const indice = Number(item.diaSemana) - 1; // converte 1..7 para índice 0..6
+    if (indice >= 0 && indice <= 6) {
+      mediasTemp[indice] = Number(Number(item.mediaTemp).toFixed(1));
+      mediasUmid[indice] = Number(Number(item.mediaUmid).toFixed(1));
+    }
+  });
+
+  return { mediasTemp, mediasUmid };
+}
+
+// GET / -> Renderiza o dashboard com leitura atual + médias semanais para o gráfico de colunas
 const obterDados = async (req, res) => {
   try {
     const response = await fetch(ESP32_URL, {
@@ -14,36 +48,30 @@ const obterDados = async (req, res) => {
     });
 
     const dados = await response.json();
+    const graficoSemanal = await obterMediasSemana();
 
-    // Busca as últimas 20 leituras salvas no TiDB Cloud para montar o gráfico
-    const ultimasLeituras = await Leitura.findAll({
-      order: [['createdAt', 'DESC']],
-      limit: 20
-    });
-    const historico = ultimasLeituras.reverse();
-
-    res.render('dashboard', { dados, response: 'ok', historico });
+    res.render('dashboard', { dados, response: 'ok', graficoSemanal });
   } catch (error) {
     console.error('Erro ao conectar ao ESP32:', error.message);
 
-    const ultimasLeituras = await Leitura.findAll({
-      order: [['createdAt', 'DESC']],
-      limit: 20
-    }).catch(() => []);
+    const graficoSemanal = await obterMediasSemana().catch(() => ({
+      mediasTemp: [0, 0, 0, 0, 0, 0, 0],
+      mediasUmid: [0, 0, 0, 0, 0, 0, 0]
+    }));
 
     const dados = {
       nome: "erro",
       temperatura: "erro",
       umidade: "erro",
-      ultimaAtualizacao: "erro"
+      tempo: "erro"
     };
 
     res.render('dashboard', {
       dados,
       response: "erro",
-      historico: ultimasLeituras.reverse(),
+      graficoSemanal,
       erro: 'Erro ao se conectar ao ESP32',
-      error
+      error: error.message
     });
   }
 };
@@ -58,16 +86,25 @@ const anotarDados = async (req, res) => {
 
     const dados = await response.json();
 
+    const temp = Number(dados.temperatura ?? dados.Temperatura ?? dados.temp);
+    const umid = Number(dados.umidade ?? dados.Umidade ?? dados.umid);
+
+    if (Number.isNaN(temp) || Number.isNaN(umid)) {
+      return res.status(400).json({ erro: 'Valores inválidos do ESP32', recebido: dados });
+    }
+
     const novaLeitura = await Leitura.create({
-      temperatura: Number(dados.temperatura),
-      umidade: Number(dados.umidade),
+      temperatura: temp,
+      umidade: umid
     });
 
-    // Encerra a requisição HTTP com sucesso
     return res.status(201).json({ status: 'salvo', id: novaLeitura.id });
   } catch (error) {
     console.error('Erro ao anotar dados:', error.message);
-    return res.status(400).json({ erro: error.message });
+    return res.status(400).json({
+      erro: error.message,
+      detalhes: error.errors ? error.errors.map(e => e.message) : null
+    });
   }
 };
 
