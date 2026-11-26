@@ -29,6 +29,6 @@
     --font-weight-small: 600;
     --font-style-small: italic;
     
-    --clamp-header: 50px, 4vw + 10px, 65px
-
+    --clamp-header: clamp(50px, calc(4vw + 6px), 60px);
+    --clamp-header-desktop: clamp(50px, calc(3.5vw + 6px), 80px);
 }
