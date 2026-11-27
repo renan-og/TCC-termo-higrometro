@@ -1,6 +1,6 @@
 const { Op, fn, col } = require('sequelize');
 const Leitura = require("../models/valuesModel");
-const ESP32_URL = '10.137.153.163/dados';
+const ESP32_URL = 'https://petalled-anathematically-kathey.ngrok-free.dev/dados';
 
 const NGROK_HEADERS = {
   'ngrok-skip-browser-warning': 'true'
