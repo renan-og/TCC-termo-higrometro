@@ -1,6 +1,6 @@
 const { Op, fn, col } = require('sequelize');
 const Leitura = require("../models/valuesModel");
-const ESP32_URL = 'https://handed-productive-dried-horizontal.trycloudflare.com/dados';
+const ESP32_URL = https://mhz-comments-week-pulling.trycloudflare.com/dados';
 
 const NGROK_HEADERS = {
   'ngrok-skip-browser-warning': 'true'
