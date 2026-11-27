@@ -14,6 +14,10 @@ sequelize.sync()
     console.error('Erro ao sincronizar tabelas:', erro);
   });
 app.listen(port, ()=>{
+    console.log(`Render:`);
+    console.log(`https://tcc-termo-higrometro.onrender.com/`);
     console.log(`Servidor rodando na porta ${port}`);
     console.log(`http://localhost:${port}/dados`);
+    console.log(`Servidor de desenvolvimento: porta ${port}`);
+    console.log(`http://localhost:${port}/desenvolvimento`);
 })
