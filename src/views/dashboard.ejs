@@ -16,13 +16,16 @@
     <div class="app">
       <header class="header">
         <div class="header-left">
-          <button class="header-fullscreen">
+          <button id="btn-fullscreen" class="header-fullscreen" type="button" title="Tela Cheia">
             <img src="/img/fullscreen.png" alt="Tela Cheia" />
           </button>
         </div>
 
         <div class="header-right">
-          <button class="header-profile">
+          <button id="btn-theme" class="header-profile" type="button" title="Alternar Modo Escuro">
+            <img src="/img/dark-mode-beta.png" alt="Ícone de Modo Escuro" />
+          </button>
+          <button class="header-profile" type="button" title="Perfil">
             <img src="/img/profile.png" alt="Ícone de Perfil" />
           </button>
         </div>
@@ -30,18 +33,18 @@
 
       <main class="dashboard">
         <section class="device-header">
-          <button class="device-selector">
+          <button class="device-selector" type="button">
             <img src="/img/menu.png" alt="Menu de Dispositivos" />
           </button>
 
           <div class="device-info">
-            <% if(response == "erro") {%>
+            <% if (response == "erro") { %>
               <strong><%= error %></strong>
               <span class="status status--connected"> ● Não conectado </span>
-            <%}else{%>
-              <h1><%= dados.nome %></h1>
+            <% } else { %>
+              <h1 id="device-name"><%= dados.nome %></h1>
               <span class="status status--connected"> ● Conectado </span>
-            <%} %>
+            <% } %>
           </div>
         </section>
 
@@ -49,32 +52,32 @@
           <div class="dashboard-left">
             <article class="metric-card">
               <span class="metric-card-label"> Temperatura </span>
-              <% if(response == "erro") {%>
+              <% if (response == "erro") { %>
                 <strong><%= error %></strong>
-              <%}else{%>
-                <strong class="metric-card-value">
+              <% } else { %>
+                <strong id="temp-value" class="metric-card-value">
                   <%= dados.temperatura %>°C
                 </strong>
-                <span class="status status--normal"> ● Normal </span>
+                <span id="temp-status" class="status status--normal"> ● Normal </span>
                 <small class="metric-card-update">
-                  Atualizado há <%= dados.tempo %> segundos
+                  Atualizado há <span class="js-tempo"><%= dados.tempo %></span> segundos
                 </small>
-              <%} %>
+              <% } %>
             </article>
 
             <article class="metric-card">
               <span class="metric-card-label"> Umidade </span>
-              <% if(response == "erro") {%>
+              <% if (response == "erro") { %>
                 <strong><%= error %></strong>
-              <%}else{%>
-                <strong class="metric-card-value">
+              <% } else { %>
+                <strong id="umid-value" class="metric-card-value">
                   <%= dados.umidade %>%
                 </strong>
-                <span class="status status--warning"> ● Alerta </span>
+                <span id="umid-status" class="status status--warning"> ● Alerta </span>
                 <small class="metric-card-update">
-                  Atualizado há <%= dados.tempo %> segundos
+                  Atualizado há <span class="js-tempo"><%= dados.tempo %></span> segundos
                 </small>
-              <%} %>
+              <% } %>
             </article>
           </div>
 
@@ -86,63 +89,244 @@
                 <canvas id="graficoSensor"></canvas>
               </div>
 
-              <% if(response == "erro") {%>
+              <% if (response == "erro") { %>
                 <strong><%= error %></strong>
-              <%}else{%>
+              <% } else { %>
                 <span class="graph-update">
-                  Atualizado há <%= dados.tempo %> segundos
+                  Atualizado há <span class="js-tempo"><%= dados.tempo %></span> segundos
                 </span>
-              <%} %>
+              <% } %>
             </article>
           </div>
         </section>
       </main>
 
       <footer class="footer">
+        <button id="btn-exit-fullscreen" class="footer-exit-fullscreen" type="button" title="Sair da tela cheia">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+          </svg>
+          <span>Sair da tela cheia</span>
+        </button>
+
         <div class="footer-logo-container"></div>
       </footer>
     </div>
 
+    <!-- Dados iniciais injetados de forma segura -->
+    <script id="dados-iniciais" type="application/json">
+      <%- JSON.stringify({
+        tempoInicial: typeof dados !== 'undefined' && !Number.isNaN(Number(dados.tempo)) ? Number(dados.tempo) : 0,
+        graficoSemanal: typeof graficoSemanal !== 'undefined'
+          ? graficoSemanal
+          : { mediasTemp: [0, 0, 0, 0, 0, 0, 0], mediasUmid: [0, 0, 0, 0, 0, 0, 0] }
+      }) %>
+    </script>
+
     <script>
-      // 1. Dispara a rota POST / a cada 5 segundos em segundo plano
-  setInterval(() => {
-    fetch('/', { method: 'POST' })
-      .catch(err => console.error('Falha ao salvar:', err));
-  }, 5000);
+      const payloadInicial = JSON.parse(document.getElementById('dados-iniciais').textContent);
+      const isModoDev = window.location.pathname.startsWith('/desenvolvimento');
 
-  // 2. Renderiza o gráfico estático de colunas por dia da semana
-  const semanal = <%- JSON.stringify(typeof graficoSemanal !== 'undefined' ? graficoSemanal : { mediasTemp: [0,0,0,0,0,0,0], mediasUmid: [0,0,0,0,0,0,0] }) %>;
-  const canvas = document.getElementById('graficoSensor');
+      // =========================================================
+      // 1. CONTADOR AO VIVO ("Atualizado há X segundos")
+      // =========================================================
+      let ultimoSyncMs = Date.now() - (payloadInicial.tempoInicial * 1000);
+      let timerContadorId = null;
 
-  if (canvas && typeof Chart !== 'undefined') {
-    new Chart(canvas.getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
-        datasets: [
-          {
-            label: 'Temperatura Média (°C)',
-            data: semanal.mediasTemp,
-            backgroundColor: '#ff4d4d',
-            borderRadius: 6
-          },
-          {
-            label: 'Umidade Média (%)',
-            data: semanal.mediasUmid,
-            backgroundColor: '#0066cc',
-            borderRadius: 6
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: { beginAtZero: true }
-        }
+      function renderizarContador() {
+        const segundos = Math.max(0, Math.round((Date.now() - ultimoSyncMs) / 1000));
+        document.querySelectorAll('.js-tempo').forEach((el) => {
+          el.textContent = segundos;
+        });
       }
-    });
-  }
+
+      function iniciarCicloContador(atrasoInicialSegundos = 0) {
+        ultimoSyncMs = Date.now() - (atrasoInicialSegundos * 1000);
+        renderizarContador();
+
+        if (timerContadorId) clearInterval(timerContadorId);
+        timerContadorId = setInterval(renderizarContador, 1000);
+      }
+
+      iniciarCicloContador(payloadInicial.tempoInicial);
+
+      // =========================================================
+      // 2. GRÁFICO SEMANAL (Chart.js)
+      // =========================================================
+      const canvas = document.getElementById('graficoSensor');
+      let chartInstance = null;
+
+      function corTextoGrafico() {
+        return document.documentElement.getAttribute('data-theme') === 'dark'
+          ? '#f3f7fd'
+          : '#061e47';
+      }
+
+      if (canvas && typeof Chart !== 'undefined') {
+        const semanal = payloadInicial.graficoSemanal;
+        chartInstance = new Chart(canvas.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+            datasets: [
+              {
+                label: 'Temperatura Média (°C)',
+                data: semanal.mediasTemp,
+                backgroundColor: '#ff4d4d',
+                borderRadius: 6
+              },
+              {
+                label: 'Umidade Média (%)',
+                data: semanal.mediasUmid,
+                backgroundColor: '#0066cc',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: { color: corTextoGrafico() }
+              }
+            },
+            scales: {
+              x: { ticks: { color: corTextoGrafico() } },
+              y: { beginAtZero: true, ticks: { color: corTextoGrafico() } }
+            }
+          }
+        });
+      }
+
+      // =========================================================
+      // 3. ATUALIZAÇÃO AUTOMÁTICA A CADA 5 SEGUNDOS
+      // =========================================================
+      function aplicarNovosDados(dados, graficoSemanal) {
+        if (!dados) return;
+
+        const deviceNameEl = document.getElementById('device-name');
+        const tempEl = document.getElementById('temp-value');
+        const umidEl = document.getElementById('umid-value');
+        const tempStatusEl = document.getElementById('temp-status');
+        const umidStatusEl = document.getElementById('umid-status');
+
+        if (deviceNameEl && dados.nome) {
+          deviceNameEl.textContent = dados.nome;
+        }
+
+        const tempVal = dados.temperatura ?? dados.Temperatura ?? dados.temp;
+        if (tempEl && tempVal !== undefined) {
+          tempEl.textContent = `${tempVal}°C`;
+          if (tempStatusEl) {
+            const alertaTemp = Number(tempVal) > 30;
+            tempStatusEl.textContent = alertaTemp ? ' ● Alerta ' : ' ● Normal ';
+            tempStatusEl.className = `status ${alertaTemp ? 'status--warning' : 'status--normal'}`;
+          }
+        }
+
+        const umidVal = dados.umidade ?? dados.Umidade ?? dados.umid;
+        if (umidEl && umidVal !== undefined) {
+          umidEl.textContent = `${umidVal}%`;
+          if (umidStatusEl) {
+            const alertaUmid = Number(umidVal) > 70;
+            umidStatusEl.textContent = alertaUmid ? ' ● Alerta ' : ' ● Normal ';
+            umidStatusEl.className = `status ${alertaUmid ? 'status--warning' : 'status--normal'}`;
+          }
+        }
+
+        if (chartInstance && graficoSemanal) {
+          chartInstance.data.datasets[0].data = graficoSemanal.mediasTemp;
+          chartInstance.data.datasets[1].data = graficoSemanal.mediasUmid;
+          chartInstance.update();
+        }
+
+        // Reinicia o relógio de 1s ancorado no momento exato desta leitura
+        const tempoEsp = Number(dados.tempo);
+        iniciarCicloContador(Number.isFinite(tempoEsp) ? tempoEsp : 0);
+      }
+
+      setInterval(async () => {
+        try {
+          if (isModoDev) {
+            const res = await fetch('/desenvolvimento/dados');
+            if (res.ok) {
+              const json = await res.json();
+              aplicarNovosDados(json.dados, json.graficoSemanal);
+            }
+          } else {
+            const res = await fetch('/', { method: 'POST' });
+            if (res.ok) {
+              const json = await res.json();
+              aplicarNovosDados(json.dados, json.graficoSemanal);
+            }
+          }
+        } catch (err) {
+          console.error('Falha ao atualizar dados:', err);
+        }
+      }, 5000);
+
+      // =========================================================
+      // 4. MODO ESCURO
+      // =========================================================
+      const btnTheme = document.getElementById('btn-theme');
+      const rootEl = document.documentElement;
+
+      function atualizarCoresGrafico() {
+        if (!chartInstance) return;
+        const cor = corTextoGrafico();
+        chartInstance.options.plugins.legend.labels.color = cor;
+        chartInstance.options.scales.x.ticks.color = cor;
+        chartInstance.options.scales.y.ticks.color = cor;
+        chartInstance.update();
+      }
+
+      if (localStorage.getItem('theme') === 'dark') {
+        rootEl.setAttribute('data-theme', 'dark');
+        atualizarCoresGrafico();
+      }
+
+      btnTheme?.addEventListener('click', () => {
+        const isDark = rootEl.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          rootEl.removeAttribute('data-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          rootEl.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+        }
+        atualizarCoresGrafico();
+      });
+
+      // =========================================================
+      // 5. TELA CHEIA (CORTA O HEADER E EXIBE SAÍDA NO FOOTER)
+      // =========================================================
+      const btnFullscreen = document.getElementById('btn-fullscreen');
+      const btnExitFullscreen = document.getElementById('btn-exit-fullscreen');
+
+      btnFullscreen?.addEventListener('click', async () => {
+        try {
+          if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+          }
+        } catch {
+          document.body.classList.add('is-fullscreen');
+        }
+      });
+
+      btnExitFullscreen?.addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+          }
+        } finally {
+          document.body.classList.remove('is-fullscreen');
+        }
+      });
+
+      document.addEventListener('fullscreenchange', () => {
+        document.body.classList.toggle('is-fullscreen', Boolean(document.fullscreenElement));
+      });
     </script>
   </body>
 </html>

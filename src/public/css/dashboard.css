@@ -34,13 +34,21 @@
 }
 
 .header button {
-  border: none;
   width: clamp(40px, 4vw, 48px);
   height: clamp(40px, 4vw, 48px);
   box-sizing: border-box;
   flex-shrink: 0;
-  
-  background-color: var(--color-primary);
+
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+
+  border-radius: 100%;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
 
   display: flex;
   align-items: center;
@@ -48,6 +56,24 @@
   
   padding: 0;
   margin: 0;
+
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.header button:hover {
+  background-color: rgba(186, 209, 246, 0.1);
+  border-color: rgba(186, 209, 246, 0.2);
+}
+
+.header button:active {
+  background-color: rgba(186, 209, 246, 0.22);
+  transform: scale(0.95);
+}
+
+.header button:focus-visible {
+  outline: 2px solid var(--color-text-secondary);
+  outline-offset: 2px;
 }
 
 .header button img {
@@ -55,9 +81,15 @@
   height: 80%;
 
   object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.header button:hover img {
+  transform: scale(1.05);
 }
 
 .footer {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -508,4 +540,70 @@ img {
     .graph-update {
         text-align: center;
     }
+}
+
+/* =========================================================
+   MODO ESCURO & INTERAÇÕES
+   ========================================================= */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+body,
+.header,
+.footer,
+.metric-card,
+.graph-card {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.metric-card,
+.graph-card {
+  color: var(--color-text-primary);
+}
+
+.header button,
+.device-header button {
+  cursor: pointer;
+}
+
+/* Tela cheia */
+:fullscreen .header,
+body.is-fullscreen .header {
+  display: none;
+}
+
+.footer-exit-fullscreen {
+  display: none;
+  position: absolute;
+  left: clamp(16px, 2.8vh, 32px);
+  top: 50%;
+  transform: translateY(-50%);
+
+  align-items: center;
+  gap: 8px;
+
+  height: clamp(34px, 3.4vw, 42px);
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #f3f7fd;
+  font-size: clamp(0.75rem, 1.3vh, 0.9rem);
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.footer-exit-fullscreen:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+:fullscreen .footer-exit-fullscreen,
+body.is-fullscreen .footer-exit-fullscreen {
+  display: inline-flex;
 }

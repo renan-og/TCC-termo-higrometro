@@ -98,7 +98,14 @@ const anotarDados = async (req, res) => {
       umidade: umid
     });
 
-    return res.status(201).json({ status: 'salvo', id: novaLeitura.id });
+    const graficoSemanal = await obterMediasSemana().catch(() => null);
+
+    return res.status(201).json({
+      status: 'salvo',
+      id: novaLeitura.id,
+      dados,
+      graficoSemanal
+    });
   } catch (error) {
     console.error('Erro ao anotar dados:', error.message);
     return res.status(400).json({
